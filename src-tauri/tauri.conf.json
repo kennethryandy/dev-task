@@ -15,6 +15,15 @@
       "shell": {
         "all": false,
         "open": true
+      },
+      "window": {
+       "maximize": true,
+       "minimize": true,
+       "close": true,
+       "setAlwaysOnTop": true,
+       "startDragging": true,
+       "unmaximize": true,
+       "unminimize": true
       }
     },
     "bundle": {
@@ -36,9 +45,11 @@
       {
         "fullscreen": false,
         "resizable": true,
-        "title": "dev-task",
-        "width": 800,
-        "height": 600
+        "center": true,
+        "title": "DevTask",
+        "height": 600,
+        "width": 1200,
+        "decorations": false
       }
     ]
   }
