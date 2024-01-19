@@ -32,19 +32,15 @@ export function Menu() {
 
   return (
     <div
-      className="flex w-full justify-between border-b"
+      className="fixed z-50 flex h-[38px] w-full items-center justify-between border-b bg-background"
       data-tauri-drag-region
     >
-      <Menubar className="rounded-none border-b border-none pl-2 lg:pl-3">
+      <Menubar className="rounded-none border-none p-0 pl-2 lg:pl-3">
         <MenubarMenu>
-          <div className="inline-flex h-fit w-fit items-center text-cyan-500">
-            <Code className="mx-1 h-3.5 w-4" />
+          <MenubarTrigger className="font-bold text-cyan-500">
+            <Code className="mr-1 h-3.5 w-4" />
             <h4 className="text-xs font-bold">DevTask~</h4>
-          </div>
-        </MenubarMenu>
-
-        <MenubarMenu>
-          <MenubarTrigger className="font-bold">App</MenubarTrigger>
+          </MenubarTrigger>
           <Dialog modal={false}>
             <MenubarContent>
               <DialogTrigger asChild>

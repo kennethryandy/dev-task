@@ -1,10 +1,7 @@
 // import { useState } from "react";
-// import reactLogo from "./assets/react.svg";
 // import { invoke } from "@tauri-apps/api/tauri";
 import { ThemeProvider } from "./theme";
-
-import { Menu } from "./dashboard/menu";
-import { Dashboard } from "./dashboard/dashboard";
+import NoteScreen from "./screens/notes/note-screen";
 
 function App() {
   // const [greetMsg, setGreetMsg] = useState("");
@@ -17,10 +14,7 @@ function App() {
 
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      <div className="h-screen overflow-clip">
-        <Menu />
-        <Dashboard />
-      </div>
+      <NoteScreen />
     </ThemeProvider>
   );
 }

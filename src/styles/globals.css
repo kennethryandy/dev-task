@@ -67,3 +67,33 @@
       "calt" 1;
   }
 }
+
+
+
+/* MD EDITOR */
+.w-md-editor-toolbar>ul {
+ display: flex;
+ align-items: center;
+}
+
+.w-md-editor {
+ height: 100%;
+ min-height: 200px;
+}
+
+.w-md-editor-content {
+ height: 100% !important;
+ display: grid;
+}
+
+.w-md-editor-text {
+ height: 90%;
+}
+.w-md-editor-area.w-md-editor-input {
+ height: 90%;
+}
+
+
+.w-md-editor-preview {
+ position: initial;
+}
