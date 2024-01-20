@@ -6,6 +6,7 @@ import MDEditor, { EditorContext, commands } from "@uiw/react-md-editor";
 import { useContext, useState } from "react";
 import { useTheme } from "next-themes";
 import { Separator } from "@/components/ui/separator";
+import { invoke } from "@tauri-apps/api/tauri";
 
 const PreviewButton = () => {
   const { preview, dispatch } = useContext(EditorContext);
@@ -38,6 +39,15 @@ export default function NoteScreen() {
       setValue(val);
     }
   };
+
+  async function greet() {
+    await invoke("greet", { name: value });
+  }
+
+  async function getAll() {
+    await invoke("get_all");
+  }
+
   return (
     <Dashboard>
       <Breadcrumbs separator={<ChevronRight size={16} />}>
@@ -60,7 +70,12 @@ export default function NoteScreen() {
             extraCommands={[codePreview, commands.fullscreen]}
           />
         </div>
-        <Button className="mt-3 self-end">Save Note</Button>
+        <Button className="mt-3 self-end" onClick={getAll}>
+          Get All
+        </Button>
+        <Button className="mt-3 self-end" onClick={greet}>
+          Save Note
+        </Button>
         <div className="mt-6">
           <h3 className="text-lg font-semibold">Notes</h3>
           <div className="mt-4 space-y-2">
