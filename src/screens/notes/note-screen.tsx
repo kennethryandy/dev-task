@@ -1,44 +1,19 @@
+import { useState } from "react";
 import Breadcrumbs from "@/components/breadcrumbs";
 import { Button } from "@/components/ui/button";
 import { Dashboard } from "@/dashboard/dashboard";
-import { ChevronRight, Code, Edit2 } from "lucide-react";
-import MDEditor, { EditorContext, commands } from "@uiw/react-md-editor";
-import { useContext, useEffect, useState } from "react";
+import { Check, ChevronRight } from "lucide-react";
+import MDEditor, { commands } from "@uiw/react-md-editor";
 import { useTheme } from "next-themes";
 import { Separator } from "@/components/ui/separator";
 // import { invoke } from "@tauri-apps/api/tauri";
-import { Folder } from "@/types/Folder";
-
-const PreviewButton = () => {
-  const { preview, dispatch } = useContext(EditorContext);
-  const click = () => {
-    if (dispatch) {
-      dispatch({
-        preview: preview === "edit" ? "preview" : "edit",
-      });
-    }
-  };
-
-  if (preview === "edit") {
-    return <Code onClick={click} size={16} />;
-  }
-  return <Edit2 onClick={click} size={12} />;
-};
-
-const codePreview = {
-  name: "preview",
-  keyCommand: "preview",
-  value: "preview",
-  icon: <PreviewButton />,
-};
+import { codePreview } from "@/components/preview-button";
 
 export default function NoteScreen() {
   const { theme } = useTheme();
-  const [folders, setFolders] = useState<Folder[]>([]);
+  const [isSaved, _setIsSaved] = useState(true);
 
-  useEffect(() => {});
-
-  const [value, setValue] = useState("v1.2.0-beta.8");
+  const [value, setValue] = useState("");
   const handleChange = (val: string | undefined) => {
     if (val !== undefined) {
       setValue(val);
@@ -48,11 +23,6 @@ export default function NoteScreen() {
   async function greet() {
     // const folder = await invoke("add_folder", { name: value });
     // setFolders((state) => [...state, folder as Folder]);
-  }
-
-  async function getAll() {
-    // const f = await invoke("get_folders");
-    // setFolders(f as Folder[]);
   }
 
   return (
@@ -75,35 +45,31 @@ export default function NoteScreen() {
             value={value}
             onChange={handleChange}
             extraCommands={[codePreview, commands.fullscreen]}
+            height={400}
+            autoFocus
           />
         </div>
-        <Button className="mt-3 self-end" onClick={getAll}>
-          Get All
-        </Button>
-        <Button className="mt-3 self-end" onClick={greet}>
-          Save Note
-        </Button>
-        <div className="mt-6">
-          <h3 className="text-lg font-semibold">Folders</h3>
-          <div className="mt-4 space-y-2">
-            {folders.map((folder) => (
-              <details className="group" key={folder.uuid}>
-                <summary className="cursor-pointer rounded px-4 pt-2 hover:bg-gray-700">
-                  <span className="text-sm font-medium">{folder.name}</span>
-                </summary>
-                <div className="rounded-b px-4 py-2">
-                  <p className="text-sm">
-                    Content for note 1 goes here. It can include markdown
-                    syntax.
-                  </p>
-                </div>
-                <div className="px-4">
-                  <Separator />
-                </div>
-              </details>
-            ))}
-          </div>
-        </div>
+        {value === "" ? (
+          <Button className="mt-3 self-end" disabled variant="outline">
+            Save
+          </Button>
+        ) : (
+          <Button
+            className="mt-3 self-end"
+            onClick={greet}
+            disabled={isSaved}
+            variant={isSaved ? "outline" : "default"}
+          >
+            {isSaved ? (
+              <>
+                <Check className="mr-2 h-4 w-4" />
+                Saved
+              </>
+            ) : (
+              "Save Note"
+            )}
+          </Button>
+        )}
         <div className="mt-6">
           <h3 className="text-lg font-semibold">Notes</h3>
           <div className="mt-4 space-y-2">

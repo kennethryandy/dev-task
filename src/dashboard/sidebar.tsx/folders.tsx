@@ -9,13 +9,14 @@ import {
   AccordionItem,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { Folder as FolderIcon, Folders as FoldersIcon } from "lucide-react";
+import { Folders as FoldersIcon } from "lucide-react";
 import { type Folder } from "@/types/Folder";
 import { DialogTrigger } from "@/components/ui/dialog";
 import NewFolderDialog from "@/components/new-folder-dialog";
+import { useFolderStore } from "@/store/folder";
 
 export default function Folders() {
-  const [folders, setFolders] = useState<Folder[]>([]);
+  const folders = useFolderStore((state) => state.folders);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -23,9 +24,8 @@ export default function Folders() {
   }, []);
 
   const getFolders = async () => {
-    const f = await invoke("get_folders");
-    console.log(f);
-    setFolders(f as Folder[]);
+    const f = await invoke("get_folders_with_notes");
+    useFolderStore.setState({ folders: f as Folder[] });
     setLoading(false);
   };
 
@@ -60,59 +60,35 @@ export default function Folders() {
     );
   }
 
-  const tags = Array.from({ length: 8 }).map(
-    (_, i, a) => `v1.2.0-beta.${a.length - i}`
-  );
-
   return (
     <>
       <Accordion
         type="multiple"
         className="mb-8 px-2.5 pt-1"
-        defaultValue={["folders"]}
+        defaultValue={[folders[0].folder_name]}
       >
-        <AccordionItem value="folders">
-          <AccordionDrawerTrigger>
-            <FoldersIcon className="mr-2.5 h-6 w-6" />
-            <h4 className="leading-non text-md flex-1 text-left font-medium">
-              Folders
-            </h4>
-          </AccordionDrawerTrigger>
-          <AccordionContent>
-            {tags.map((tag, i) => (
-              <>
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start"
-                  key={i}
-                >
-                  {tag}
-                </Button>
-              </>
-            ))}
-          </AccordionContent>
-        </AccordionItem>
-        <AccordionItem value="folders2">
-          <AccordionDrawerTrigger>
-            <FolderIcon className="mr-2.5 h-6 w-6" />
-            <h4 className="leading-non text-md flex-1 text-left font-medium">
-              Another item
-            </h4>
-          </AccordionDrawerTrigger>
-          <AccordionContent>
-            {tags.map((tag, i) => (
-              <>
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start"
-                  key={i}
-                >
-                  {tag}
-                </Button>
-              </>
-            ))}
-          </AccordionContent>
-        </AccordionItem>
+        {folders.map((folder) => (
+          <AccordionItem key={folder.folder_name} value={folder.folder_name}>
+            <AccordionDrawerTrigger>
+              <FoldersIcon className="mr-2.5 h-6 w-6" />
+              <h4 className="leading-non text-md flex-1 text-left font-medium">
+                {folder.folder_name}
+              </h4>
+            </AccordionDrawerTrigger>
+            {folder.notes &&
+              folder.notes.map((note) => (
+                <AccordionContent>
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start italic"
+                    key={note.intermediate_ext}
+                  >
+                    {note.name}
+                  </Button>
+                </AccordionContent>
+              ))}
+          </AccordionItem>
+        ))}
       </Accordion>
     </>
   );

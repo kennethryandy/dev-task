@@ -8,12 +8,6 @@ pub use note::*;
 use crate::config::AppFileHandler;
 
 #[tauri::command]
-pub fn new_folder(folder_name: &str, state: tauri::State<'_, AppFileHandler>) -> Folder {
-    state.create_dir(folder_name).unwrap();
-    Folder::init(folder_name, Vec::new())
-}
-
-#[tauri::command]
 pub fn get_folders_with_notes(state: tauri::State<'_, AppFileHandler>) -> Vec<Folder> {
     state.get_folders().unwrap()
 }

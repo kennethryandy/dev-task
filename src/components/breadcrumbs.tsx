@@ -46,8 +46,12 @@ export default function Breadcrumbs({
 }: BreadcrumbProps) {
   const allItems = React.Children.toArray(children)
     .filter((child) => React.isValidElement(child))
-    .map((child) => {
-      return <li className={listClassName}>{child}</li>;
+    .map((child, i) => {
+      return (
+        <li key={i} className={listClassName}>
+          {child}
+        </li>
+      );
     });
   return (
     <nav>
