@@ -3,10 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Dashboard } from "@/dashboard/dashboard";
 import { ChevronRight, Code, Edit2 } from "lucide-react";
 import MDEditor, { EditorContext, commands } from "@uiw/react-md-editor";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import { Separator } from "@/components/ui/separator";
-import { invoke } from "@tauri-apps/api/tauri";
+// import { invoke } from "@tauri-apps/api/tauri";
+import { Folder } from "@/types/Folder";
 
 const PreviewButton = () => {
   const { preview, dispatch } = useContext(EditorContext);
@@ -33,19 +34,25 @@ const codePreview = {
 
 export default function NoteScreen() {
   const { theme } = useTheme();
+  const [folders, setFolders] = useState<Folder[]>([]);
+
+  useEffect(() => {});
+
   const [value, setValue] = useState("v1.2.0-beta.8");
   const handleChange = (val: string | undefined) => {
-    if (val) {
+    if (val !== undefined) {
       setValue(val);
     }
   };
 
   async function greet() {
-    await invoke("greet", { name: value });
+    // const folder = await invoke("add_folder", { name: value });
+    // setFolders((state) => [...state, folder as Folder]);
   }
 
   async function getAll() {
-    await invoke("get_all");
+    // const f = await invoke("get_folders");
+    // setFolders(f as Folder[]);
   }
 
   return (
@@ -76,6 +83,27 @@ export default function NoteScreen() {
         <Button className="mt-3 self-end" onClick={greet}>
           Save Note
         </Button>
+        <div className="mt-6">
+          <h3 className="text-lg font-semibold">Folders</h3>
+          <div className="mt-4 space-y-2">
+            {folders.map((folder) => (
+              <details className="group" key={folder.uuid}>
+                <summary className="cursor-pointer rounded px-4 pt-2 hover:bg-gray-700">
+                  <span className="text-sm font-medium">{folder.name}</span>
+                </summary>
+                <div className="rounded-b px-4 py-2">
+                  <p className="text-sm">
+                    Content for note 1 goes here. It can include markdown
+                    syntax.
+                  </p>
+                </div>
+                <div className="px-4">
+                  <Separator />
+                </div>
+              </details>
+            ))}
+          </div>
+        </div>
         <div className="mt-6">
           <h3 className="text-lg font-semibold">Notes</h3>
           <div className="mt-4 space-y-2">

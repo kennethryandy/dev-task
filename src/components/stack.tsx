@@ -1,12 +1,11 @@
 import { type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-export default function Stack({
-  children,
-  className = "",
-}: {
+interface StackProps {
   children: ReactNode;
-  className: string | undefined;
-}) {
+  className?: string;
+}
+
+export default function Stack({ children, className = "" }: StackProps) {
   return <div className={cn("flex flex-col", className)}>{children}</div>;
 }
