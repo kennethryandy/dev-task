@@ -2,18 +2,20 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 #![allow(unused)]
 
+use config::AppFileHandler;
+
 mod config;
 mod handler;
 
-use config::AppFileHandler;
+use handler::{get_folders_with_notes, get_notes_by_folder};
 
 fn main() {
-    let fh = AppFileHandler::new();
-    let contents = fh.read_from_dir("test folder");
-    dbg!(contents);
     tauri::Builder::default()
         .manage(AppFileHandler::new())
-        .invoke_handler(tauri::generate_handler![])
+        .invoke_handler(tauri::generate_handler![
+            get_notes_by_folder,
+            get_folders_with_notes
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
