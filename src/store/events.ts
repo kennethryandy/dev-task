@@ -6,21 +6,21 @@ import { init_folders } from './folder';
 import { type Folder } from "@/types/Folder";
 
 const useGlobalAppStore = create<GlobalAppStore>(() => ({
- loading: false,
+ sidebar_loading: false,
 }));
 
-export const app_load = () => useGlobalAppStore.setState({ loading: true });
-export const app_loaded = () => useGlobalAppStore.setState({ loading: false });
+export const app_sidebar_load = () => useGlobalAppStore.setState({ sidebar_loading: true });
+export const app_sidebar_loaded = () => useGlobalAppStore.setState({ sidebar_loading: false });
 
 const subscribeStateSync = async () => {
- app_load();
+ app_sidebar_load();
  emitTauri(EVENTS.ON_CLIENT_READY, { ready: true });
  const unsubscribe = await listen(EVENTS.EMIT_FOLDERS, (event) => {
   if (event.payload) {
    init_folders(event.payload as Folder[]);
   }
  });
- app_loaded();
+ app_sidebar_loaded();
  return async () => {
   unsubscribe();
  };

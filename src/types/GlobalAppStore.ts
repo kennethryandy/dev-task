@@ -2,5 +2,5 @@
 
 
 export default interface GlobalAppStore {
- loading: boolean;
+ sidebar_loading: boolean;
 }
