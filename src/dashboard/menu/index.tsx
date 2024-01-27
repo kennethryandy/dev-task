@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { Code, Globe, Mic } from "lucide-react";
 // import { WindowTitlebar } from "tauri-controls";
 
@@ -23,8 +23,10 @@ import {
 import { MenuModeToggle } from "./menu-mode-toggle";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { WindowsControls } from "./windows-controls";
+import NewFolderDialog from "@/components/new-folder-dialog";
 
 export function Menu() {
+  const [openNewFolder, setOpenNewFolder] = useState(false);
   const closeWindow = useCallback(async () => {
     // const { appWindow } = await import("@tauri-apps/plugin-window")
     // appWindow.close()
@@ -41,89 +43,79 @@ export function Menu() {
             <Code className="mr-1 h-3.5 w-4" />
             <h4 className="text-xs font-bold">DevTask~</h4>
           </MenubarTrigger>
-          <Dialog modal={false}>
-            <MenubarContent>
-              <DialogTrigger asChild>
-                <MenubarItem>About App</MenubarItem>
-              </DialogTrigger>
+          {/* <Dialog modal={false}> */}
+          <MenubarContent>
+            {/* <DialogTrigger asChild> */}
+            <MenubarItem>About App</MenubarItem>
+            {/* </DialogTrigger> */}
 
-              <MenubarSeparator />
-              <MenubarItem>
-                Preferences... <MenubarShortcut>⌘,</MenubarShortcut>
-              </MenubarItem>
-              <MenubarSeparator />
-              <MenubarItem>
-                Hide Music... <MenubarShortcut>⌘H</MenubarShortcut>
-              </MenubarItem>
-              <MenubarItem>
-                Hide Others... <MenubarShortcut>⇧⌘H</MenubarShortcut>
-              </MenubarItem>
-              <MenubarShortcut />
-              <MenubarItem onClick={closeWindow}>
-                Quit Music <MenubarShortcut>⌘Q</MenubarShortcut>
-              </MenubarItem>
-            </MenubarContent>
-            {/* <AboutDialog /> */}
-          </Dialog>
+            <MenubarSeparator />
+            <MenubarItem>
+              Preferences... <MenubarShortcut>⌘,</MenubarShortcut>
+            </MenubarItem>
+            <MenubarSeparator />
+            <MenubarItem>
+              Hide Music... <MenubarShortcut>⌘H</MenubarShortcut>
+            </MenubarItem>
+            <MenubarItem>
+              Hide Others... <MenubarShortcut>⇧⌘H</MenubarShortcut>
+            </MenubarItem>
+            <MenubarShortcut />
+            <MenubarItem onClick={closeWindow}>
+              Quit Music <MenubarShortcut>⌘Q</MenubarShortcut>
+            </MenubarItem>
+          </MenubarContent>
+          {/* <AboutDialog /> */}
+          {/* </Dialog> */}
         </MenubarMenu>
         <MenubarMenu>
           <MenubarTrigger className="relative">File</MenubarTrigger>
-          <MenubarContent>
-            <MenubarSub>
-              <MenubarSubTrigger>New</MenubarSubTrigger>
-              <MenubarSubContent className="w-[230px]">
-                <MenubarItem>
-                  Playlist <MenubarShortcut>⌘N</MenubarShortcut>
-                </MenubarItem>
-                <MenubarItem disabled>
-                  Playlist from Selection <MenubarShortcut>⇧⌘N</MenubarShortcut>
-                </MenubarItem>
-                <MenubarItem>
-                  Smart Playlist... <MenubarShortcut>⌥⌘N</MenubarShortcut>
-                </MenubarItem>
-                <MenubarItem>Playlist Folder</MenubarItem>
-                <MenubarItem disabled>Genius Playlist</MenubarItem>
-              </MenubarSubContent>
-            </MenubarSub>
-            <MenubarItem>
-              Open Stream URL... <MenubarShortcut>⌘U</MenubarShortcut>
-            </MenubarItem>
-            <MenubarItem>
-              Close Window <MenubarShortcut>⌘W</MenubarShortcut>
-            </MenubarItem>
-            <MenubarSeparator />
-            <MenubarSub>
-              <MenubarSubTrigger>Library</MenubarSubTrigger>
-              <MenubarSubContent>
-                <MenubarItem>Update Cloud Library</MenubarItem>
-                <MenubarItem>Update Genius</MenubarItem>
-                <MenubarSeparator />
-                <MenubarItem>Organize Library...</MenubarItem>
-                <MenubarItem>Export Library...</MenubarItem>
-                <MenubarSeparator />
-                <MenubarItem>Import Playlist...</MenubarItem>
-                <MenubarItem disabled>Export Playlist...</MenubarItem>
-                <MenubarItem>Show Duplicate Items</MenubarItem>
-                <MenubarSeparator />
-                <MenubarItem>Get Album Artwork</MenubarItem>
-                <MenubarItem disabled>Get Track Names</MenubarItem>
-              </MenubarSubContent>
-            </MenubarSub>
-            <MenubarItem>
-              Import... <MenubarShortcut>⌘O</MenubarShortcut>
-            </MenubarItem>
-            <MenubarItem disabled>Burn Playlist to Disc...</MenubarItem>
-            <MenubarSeparator />
-            <MenubarItem>
-              Show in Finder <MenubarShortcut>⇧⌘R</MenubarShortcut>{" "}
-            </MenubarItem>
-            <MenubarItem>Convert</MenubarItem>
-            <MenubarSeparator />
-            <MenubarItem>Page Setup...</MenubarItem>
-            <MenubarItem disabled>
-              Print... <MenubarShortcut>⌘P</MenubarShortcut>
-            </MenubarItem>
-          </MenubarContent>
+          <Dialog open={openNewFolder} onOpenChange={setOpenNewFolder}>
+            <MenubarContent>
+              <DialogTrigger className="w-full">
+                <MenubarItem>New Folder</MenubarItem>
+              </DialogTrigger>
+              <MenubarItem>
+                Open Stream URL... <MenubarShortcut>⌘U</MenubarShortcut>
+              </MenubarItem>
+              <MenubarItem>
+                Close Window <MenubarShortcut>⌘W</MenubarShortcut>
+              </MenubarItem>
+              <MenubarSeparator />
+              <MenubarSub>
+                <MenubarSubTrigger>Library</MenubarSubTrigger>
+                <MenubarSubContent>
+                  <MenubarItem>Update Cloud Library</MenubarItem>
+                  <MenubarItem>Update Genius</MenubarItem>
+                  <MenubarSeparator />
+                  <MenubarItem>Organize Library...</MenubarItem>
+                  <MenubarItem>Export Library...</MenubarItem>
+                  <MenubarSeparator />
+                  <MenubarItem>Import Playlist...</MenubarItem>
+                  <MenubarItem disabled>Export Playlist...</MenubarItem>
+                  <MenubarItem>Show Duplicate Items</MenubarItem>
+                  <MenubarSeparator />
+                  <MenubarItem>Get Album Artwork</MenubarItem>
+                  <MenubarItem disabled>Get Track Names</MenubarItem>
+                </MenubarSubContent>
+              </MenubarSub>
+              <MenubarItem>
+                Import... <MenubarShortcut>⌘O</MenubarShortcut>
+              </MenubarItem>
+              <MenubarItem disabled>Burn Playlist to Disc...</MenubarItem>
+              <MenubarSeparator />
+              <MenubarItem>
+                Show in Finder <MenubarShortcut>⇧⌘R</MenubarShortcut>{" "}
+              </MenubarItem>
+              <MenubarItem>Convert</MenubarItem>
+              <MenubarSeparator />
+              <MenubarItem>Page Setup...</MenubarItem>
+              <MenubarItem disabled>
+                Print... <MenubarShortcut>⌘P</MenubarShortcut>
+              </MenubarItem>
+            </MenubarContent>
+            <NewFolderDialog setOpen={setOpenNewFolder} />
+          </Dialog>
         </MenubarMenu>
         <MenubarMenu>
           <MenubarTrigger>Edit</MenubarTrigger>

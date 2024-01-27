@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-import { invoke } from "@tauri-apps/api/tauri";
 import Stack from "@/components/stack";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -10,24 +8,16 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Folders as FoldersIcon } from "lucide-react";
-import { type Folder } from "@/types/Folder";
-import { DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import NewFolderDialog from "@/components/new-folder-dialog";
-import { useFolderStore } from "@/store/folder";
+import useFolderStore from "@/store/folder";
+import useGlobalAppStore from "@/store/events";
+import { useState } from "react";
 
 export default function Folders() {
+  const [openNewFolder, setOpenNewFolder] = useState(false);
   const folders = useFolderStore((state) => state.folders);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    getFolders();
-  }, []);
-
-  const getFolders = async () => {
-    const f = await invoke("get_folders_with_notes");
-    useFolderStore.setState({ folders: f as Folder[] });
-    setLoading(false);
-  };
+  const loading = useGlobalAppStore((state) => state.sidebar_loading);
 
   if (loading) {
     return (
@@ -49,13 +39,14 @@ export default function Folders() {
   if (folders.length === 0) {
     return (
       <div className="mt-1 px-2 pt-1">
-        <NewFolderDialog>
+        <Dialog open={openNewFolder} onOpenChange={setOpenNewFolder}>
           <DialogTrigger asChild>
             <Button className="w-full border-2 border-dashed" variant="outline">
               Add Folder
             </Button>
           </DialogTrigger>
-        </NewFolderDialog>
+          <NewFolderDialog setOpen={setOpenNewFolder} />
+        </Dialog>
       </div>
     );
   }
