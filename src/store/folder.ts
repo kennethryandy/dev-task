@@ -9,7 +9,7 @@ interface FolderState {
 }
 
 const useFolderStore = create<FolderState>()(
-  devtools(persist((_set, get) => ({
+  devtools(persist((_set, _get) => ({
     folders: [],
     selectedNote: undefined,
   }),

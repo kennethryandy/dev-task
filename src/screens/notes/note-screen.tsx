@@ -1,29 +1,53 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import Breadcrumbs from "@/components/breadcrumbs";
 import { Button } from "@/components/ui/button";
 import { Dashboard } from "@/dashboard/dashboard";
-import { Check, ChevronRight } from "lucide-react";
+import { Check, ChevronRight, Loader2 } from "lucide-react";
 import MDEditor, { commands } from "@uiw/react-md-editor";
 import { useTheme } from "next-themes";
 import { Separator } from "@/components/ui/separator";
 // import { invoke } from "@tauri-apps/api/tauri";
 import { codePreview } from "@/components/preview-button";
+import { useDebounce } from "@/hooks/debounce";
+import { create } from "zustand";
+
+const useSaving = create(() => ({
+  saving: false,
+}));
 
 export default function NoteScreen() {
   const { theme } = useTheme();
-  const [isSaved, _setIsSaved] = useState(true);
-
+  const saving = useSaving((state) => state.saving);
+  const [isSaved, setIsSaved] = useState(false);
   const [value, setValue] = useState("");
+
+  const debounceSave = useCallback(
+    useDebounce(async (e: string) => {
+      useSaving.setState({ saving: true });
+      setIsSaved(false);
+      console.log(e);
+      console.log({ saving, isSaved });
+      await new Promise((r) => setTimeout(r, 2000));
+      handleSave();
+    }),
+    []
+  );
+
   const handleChange = (val: string | undefined) => {
     if (val !== undefined) {
       setValue(val);
+      if (isSaved) {
+        setIsSaved(false);
+      }
+      debounceSave(val);
     }
   };
 
-  async function greet() {
-    // const folder = await invoke("add_folder", { name: value });
-    // setFolders((state) => [...state, folder as Folder]);
-  }
+  const handleSave = async () => {
+    console.log("handleSave");
+    useSaving.setState({ saving: false });
+    setIsSaved(true);
+  };
 
   return (
     <Dashboard>
@@ -49,24 +73,34 @@ export default function NoteScreen() {
             autoFocus
           />
         </div>
-        {value === "" ? (
-          <Button className="mt-3 self-end" disabled variant="outline">
+        {value === "" && !saving ? (
+          <Button
+            onClick={handleSave}
+            className="mt-3 self-end"
+            disabled
+            variant="outline"
+          >
             Save
           </Button>
         ) : (
           <Button
             className="mt-3 self-end"
-            onClick={greet}
-            disabled={isSaved}
-            variant={isSaved ? "outline" : "default"}
+            onClick={!saving && !isSaved ? handleSave : undefined}
+            disabled={isSaved || saving}
+            variant={isSaved || saving ? "outline" : "default"}
           >
-            {isSaved ? (
+            {saving ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Saving
+              </>
+            ) : isSaved ? (
               <>
                 <Check className="mr-2 h-4 w-4" />
                 Saved
               </>
             ) : (
-              "Save Note"
+              <>Save</>
             )}
           </Button>
         )}
