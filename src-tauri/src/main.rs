@@ -9,7 +9,7 @@ mod constants;
 mod handler;
 mod lifecycle;
 
-use handler::{create_folder, get_folders_with_notes, get_notes_by_folder};
+use handler::{create_folder, get_folders_with_notes};
 use lifecycle::setup_app;
 use tauri::Manager;
 
@@ -25,7 +25,6 @@ fn main() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
-            get_notes_by_folder,
             get_folders_with_notes,
             create_folder
         ])

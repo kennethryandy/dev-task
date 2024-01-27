@@ -3,11 +3,11 @@ use rand::{thread_rng, Rng};
 use std::{
     ffi::OsStr,
     fs,
-    io::{Error, Read},
+    io::{Error, ErrorKind, Read},
     path::PathBuf,
 };
 
-use crate::handler::{Folder, Note};
+use crate::handler::{BaseFile, Folder, Note};
 
 pub struct AppFileHandler {
     path: PathBuf,
@@ -72,11 +72,16 @@ impl AppFileHandler {
             let entry_path = entry.unwrap().path();
             if entry_path.is_dir() {
                 let folder_name = entry_path.file_name().unwrap().to_str().unwrap();
-                let folder = Folder {
-                    folder_name: folder_name.to_owned(),
-                    notes: self.get_notes(&folder_name.to_string()).unwrap(),
-                };
-                folders.push(folder);
+                if let Some(file_info) = BaseFile::from_path(&entry_path) {
+                    let folder = Folder {
+                        folder_name: folder_name.to_owned(),
+                        notes: self.get_notes(&folder_name.to_string()).unwrap(),
+                        file_info,
+                    };
+                    folders.push(folder);
+                } else {
+                    println!("Error retrieving file metadata.");
+                }
             }
         }
         Ok(folders)
@@ -91,32 +96,34 @@ impl AppFileHandler {
             let ext = &file_path.extension();
 
             if file_path.is_file() && file_path.extension() == Some(OsStr::new("txt")) {
-                let mut file = fs::File::open(&file_path)?;
+                if let Some(file_info) = BaseFile::from_path(&file_path) {
+                    // let mut file = fs::File::open(&file_path)?;
+                    let name = file_path
+                        .file_stem()
+                        .unwrap()
+                        .to_str()
+                        .unwrap()
+                        .split(".")
+                        .nth(0)
+                        .unwrap();
+                    let intermediate_ext = file_path
+                        .file_name()
+                        .unwrap()
+                        .to_str()
+                        .unwrap()
+                        .split(".")
+                        .nth(1)
+                        .unwrap();
 
-                let name = file_path
-                    .file_stem()
-                    .unwrap()
-                    .to_str()
-                    .unwrap()
-                    .split(".")
-                    .nth(0)
-                    .unwrap();
-                let intermediate_ext = file_path
-                    .file_name()
-                    .unwrap()
-                    .to_str()
-                    .unwrap()
-                    .split(".")
-                    .nth(1)
-                    .unwrap();
-
-                contents.push(Note::new(
-                    folder_name,
-                    name,
-                    ext.unwrap().to_str().unwrap(),
-                    intermediate_ext,
-                    None,
-                ));
+                    contents.push(Note::new(
+                        folder_name,
+                        name,
+                        ext.unwrap().to_str().unwrap(),
+                        intermediate_ext,
+                        None,
+                        file_info,
+                    ));
+                }
             }
         }
         Ok(contents)
@@ -140,14 +147,22 @@ impl AppFileHandler {
             .path
             .join(folder_name)
             .join(format!("{}.tmp-{}.{}", filename, intermediate_ext, "txt"));
-        fs::write(path, &content)?;
-        Ok(Note::new(
-            folder_name,
-            filename.as_str(),
-            path.extension().unwrap().to_str().unwrap(),
-            intermediate_ext.as_str(),
-            Some(content.to_string()),
-        ))
+        if let Some(file_info) = BaseFile::from_path(&path) {
+            fs::write(path, &content)?;
+            Ok(Note::new(
+                folder_name,
+                filename.as_str(),
+                path.extension().unwrap().to_str().unwrap(),
+                intermediate_ext.as_str(),
+                Some(content.to_string()),
+                file_info,
+            ))
+        } else {
+            Err(Error::new(
+                ErrorKind::Other,
+                "Error retrieving file metadata.",
+            ))
+        }
     }
 
     pub fn create_dir(&self, folder_name: &str) -> Result<(), Error> {

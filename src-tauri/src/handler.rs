@@ -1,7 +1,9 @@
+mod base_file;
 mod folder;
 mod note;
 
 // re-export
+pub use base_file::*;
 pub use folder::*;
 pub use note::*;
 
@@ -12,11 +14,11 @@ pub fn get_folders_with_notes(state: tauri::State<'_, AppFileHandler>) -> Vec<Fo
     state.get_folders().unwrap()
 }
 
-#[tauri::command]
-pub fn get_notes_by_folder(folder_name: &str, state: tauri::State<'_, AppFileHandler>) -> Folder {
-    let notes = state.get_notes(folder_name).unwrap();
-    Folder::init(folder_name, notes)
-}
+// #[tauri::command]
+// pub fn get_notes_by_folder(folder_name: &str, state: tauri::State<'_, AppFileHandler>) -> Folder {
+//     let notes = state.get_notes(folder_name).unwrap();
+//     Folder::init(folder_name, notes)
+// }
 
 #[tauri::command]
 pub fn create_folder(
