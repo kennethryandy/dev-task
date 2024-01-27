@@ -6,7 +6,7 @@ use std::io::Error;
 
 use super::note::Note;
 
-#[derive(Debug, Serialize, Deserialize, TS)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
 #[ts(export, export_to = "../src/types/")]
 pub struct Folder {
     pub(crate) folder_name: String,

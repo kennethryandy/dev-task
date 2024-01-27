@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
-#[derive(Debug, Serialize, Deserialize, TS)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
 #[ts(export, export_to = "../src/types/")]
 pub struct Note {
     folder_name: String,

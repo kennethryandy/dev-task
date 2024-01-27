@@ -5,13 +5,25 @@
 use config::AppFileHandler;
 
 mod config;
+mod constants;
 mod handler;
+mod lifecycle;
 
 use handler::{create_folder, get_folders_with_notes, get_notes_by_folder};
+use lifecycle::setup_app;
+use tauri::Manager;
+
+#[derive(Clone, serde::Serialize)]
+struct Payload {
+    message: String,
+}
 
 fn main() {
     tauri::Builder::default()
-        .manage(AppFileHandler::new())
+        .setup(|app| {
+            setup_app(app);
+            Ok(())
+        })
         .invoke_handler(tauri::generate_handler![
             get_notes_by_folder,
             get_folders_with_notes,
